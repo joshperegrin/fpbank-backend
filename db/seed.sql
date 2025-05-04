@@ -62,10 +62,10 @@ INSERT INTO Banks (name, is_active) VALUES
 -- =========================================================================
 -- Note: Market data is illustrative and not real-time.
 INSERT INTO Cryptocurrencies (coin_name, coin_code, rank, market_cap, market_dominance, circulation_supply, max_supply, total_supply, issue_date, all_time_high, all_time_low, current_value, delta_24h, icon_url, last_updated, is_active) VALUES
-('Bitcoin', 'BTC', 1, '$1.3T', '52.1%', '19.7M BTC', '21M BTC', '19.7M BTC', '2009-01-03', '$73,750.07', '$67.81', 68000.50, 1.5, 'https://example.com/icons/btc.png', NOW() - INTERVAL '1 hour', TRUE),
-('Ethereum', 'ETH', 2, '$450B', '18.2%', '120.2M ETH', NULL, '120.2M ETH', '2015-07-30', '$4,891.70', '$0.43', 3750.25, -0.8, 'https://example.com/icons/eth.png', NOW() - INTERVAL '1 hour', TRUE),
-('Solana', 'SOL', 5, '$75B', '3.0%', '448.5M SOL', NULL, '575.2M SOL', '2020-03-23', '$260.06', '$0.50', 168.10, 3.2, 'https://example.com/icons/sol.png', NOW() - INTERVAL '1 hour', TRUE),
-('Dogecoin', 'DOGE', 8, '$22B', '0.9%', '144.1B DOGE', NULL, '144.1B DOGE', '2013-12-06', '$0.7376', '$0.000085', 0.15, -2.5, 'https://example.com/icons/doge.png', NOW() - INTERVAL '1 hour', FALSE); -- Example inactive coin
+('Bitcoin', 'BTC', 1, '$1.3T', '52.1%', '19.7M BTC', '21M BTC', '19.7M BTC', '2009-01-03', '$73,750.07', '$67.81', 68000.50, 1.5, 'https://example.com/icons/btc.png', DATETIME('now', '-1 hour'), TRUE),
+('Ethereum', 'ETH', 2, '$450B', '18.2%', '120.2M ETH', NULL, '120.2M ETH', '2015-07-30', '$4,891.70', '$0.43', 3750.25, -0.8, 'https://example.com/icons/eth.png', DATETIME('now', '-1 hour'), TRUE),
+('Solana', 'SOL', 5, '$75B', '3.0%', '448.5M SOL', NULL, '575.2M SOL', '2020-03-23', '$260.06', '$0.50', 168.10, 3.2, 'https://example.com/icons/sol.png', DATETIME('now', '-1 hour'), TRUE),
+('Dogecoin', 'DOGE', 8, '$22B', '0.9%', '144.1B DOGE', NULL, '144.1B DOGE', '2013-12-06', '$0.7376', '$0.000085', 0.15, -2.5, 'https://example.com/icons/doge.png', DATETIME('now', '-1 hour'), FALSE); -- Example inactive coin
 
 
 -- =========================================================================

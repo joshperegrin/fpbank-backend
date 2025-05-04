@@ -1,6 +1,6 @@
 
 CREATE TABLE Users (
-    user_id SERIAL PRIMARY KEY,
+    user_id INTEGER PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL, -- Store hashed passwords only
     firstname VARCHAR(100) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE Users (
 CREATE INDEX idx_users_email ON Users(email);
 
 CREATE TABLE Accounts (
-    account_id SERIAL PRIMARY KEY,
+    account_id INTEGER PRIMARY KEY,
     user_id INT NOT NULL REFERENCES Users(user_id) ON DELETE CASCADE,
     account_number VARCHAR(50) UNIQUE NOT NULL,
     balance DECIMAL(18, 4) NOT NULL DEFAULT 0.00,
@@ -27,7 +27,7 @@ CREATE TABLE Accounts (
     currency VARCHAR(3) NOT NULL DEFAULT 'PHP', -- Default currency, adjust as needed
     debit_card_number VARCHAR(20) UNIQUE, -- Assumes one card per account for simplicity
     debit_card_expiry VARCHAR(5), -- e.g., MM/YY (Note: Storing CVV is highly discouraged and often non-compliant)
-    debit_card_cvv VARCHAR(3) 
+    debit_card_cvv VARCHAR(3), 
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -38,7 +38,7 @@ CREATE INDEX idx_accounts_account_number ON Accounts(account_number);
 CREATE INDEX idx_accounts_debit_card_number ON Accounts(debit_card_number);
 
 CREATE TABLE Billers (
-    biller_id SERIAL PRIMARY KEY,
+    biller_id INTEGER PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     is_active BOOLEAN DEFAULT TRUE, -- To enable/disable billers
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -48,7 +48,7 @@ CREATE TABLE Billers (
 CREATE INDEX idx_billers_name ON Billers(name);
 
 CREATE TABLE Ewallets (
-    ewallet_id SERIAL PRIMARY KEY,
+    ewallet_id INTEGER PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     is_active BOOLEAN DEFAULT TRUE, -- To enable/disable e-wallets
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -58,7 +58,7 @@ CREATE TABLE Ewallets (
 CREATE INDEX idx_ewallets_name ON Ewallets(name);
 
 CREATE TABLE Banks (
-    bank_id SERIAL PRIMARY KEY,
+    bank_id INTEGER PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     is_active BOOLEAN DEFAULT TRUE, -- To enable/disable banks
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -68,17 +68,13 @@ CREATE TABLE Banks (
 CREATE INDEX idx_banks_name ON Banks(name);
 
 
--- Define ENUM types (syntax might vary slightly between DB systems)
-CREATE TYPE transaction_status AS ENUM ('PENDING', 'COMPLETED', 'FAILED', 'CANCELLED');
-CREATE TYPE transaction_type AS ENUM ('INTERNAL_TRANSFER', 'EXTERNAL_TRANSFER', 'BILL_PAYMENT', 'EWALLET_LOAD', 'CRYPTO_CONVERSION', 'CARDLESS_WITHDRAWAL', 'DEPOSIT'); -- Add other types as needed
-
 CREATE TABLE Transactions (
-    transaction_id SERIAL PRIMARY KEY,
+    transaction_id INTEGER PRIMARY KEY,
     transaction_reference_number VARCHAR(100) UNIQUE NOT NULL, -- System generated unique ID
     transaction_name VARCHAR(255), -- e.g., "Transfer to John Doe", "Meralco Bill Payment"
     transaction_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    status transaction_status NOT NULL DEFAULT 'PENDING',
-    type transaction_type NOT NULL,
+    status TEXT CHECK( status IN ('PENDING', 'COMPLETED', 'FAILED', 'CANCELLED') ) NOT NULL DEFAULT 'PENDING',
+    type TEXT CHECK( type IN ('INTERNAL_TRANSFER', 'EXTERNAL_TRANSFER', 'BILL_PAYMENT', 'EWALLET_LOAD', 'CRYPTO_CONVERSION', 'CARDLESS_WITHDRAWAL', 'DEPOSIT') ) NOT NULL,
 
     -- Core transaction details
     account_id INT NOT NULL REFERENCES Accounts(account_id), -- The source account initiating the transaction
@@ -118,7 +114,7 @@ CREATE INDEX idx_transactions_ref_num ON Transactions(transaction_reference_numb
 CREATE INDEX idx_transactions_recipient_account_id ON Transactions(recipient_account_id); -- For finding incoming internal transfers
 
 CREATE TABLE Cryptocurrencies (
-    crypto_id SERIAL PRIMARY KEY,
+    crypto_id INTEGER PRIMARY KEY,
     coin_name VARCHAR(100) NOT NULL,
     coin_code VARCHAR(10) UNIQUE NOT NULL, -- e.g., BTC, ETH
     rank INT,
@@ -142,7 +138,7 @@ CREATE INDEX idx_cryptocurrencies_coin_code ON Cryptocurrencies(coin_code);
 CREATE INDEX idx_cryptocurrencies_coin_name ON Cryptocurrencies(coin_name);
 
 CREATE TABLE CryptoPortfolios (
-    portfolio_entry_id SERIAL PRIMARY KEY,
+    portfolio_entry_id INTEGER PRIMARY KEY,
     user_id INT NOT NULL REFERENCES Users(user_id) ON DELETE CASCADE,
     crypto_id INT NOT NULL REFERENCES Cryptocurrencies(crypto_id),
     coin_amount DECIMAL(24, 10) NOT NULL DEFAULT 0.0000000000, -- Amount of the coin held
@@ -159,7 +155,7 @@ CREATE INDEX idx_cryptoportfolios_crypto_id ON CryptoPortfolios(crypto_id);
 
 
 CREATE TABLE CryptoTransactions (
-    crypto_transaction_id SERIAL PRIMARY KEY,
+    crypto_transaction_id INTEGER PRIMARY KEY,
     reference_number VARCHAR(100) UNIQUE NOT NULL,
     user_id INT NOT NULL REFERENCES Users(user_id),
 
@@ -175,8 +171,8 @@ CREATE TABLE CryptoTransactions (
 
     -- Transaction details
     transaction_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    status transaction_status NOT NULL DEFAULT 'COMPLETED', -- Assuming conversions are instant/atomic for simplicity
-    exchange_rate DECIMAL(24, 10), -- Optional: Rate at time of conversion
+    status TEXT CHECK( status IN ('PENDING', 'COMPLETED', 'FAILED', 'CANCELLED') ) NOT NULL DEFAULT 'COMPLETED', -- Assuming conversions are instant/atomic for simplicity
+    exchange_rate DECIMAL(24, 10) -- Optional: Rate at time of conversion
 );
 
 -- Indexes
