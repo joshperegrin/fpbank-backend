@@ -1,6 +1,6 @@
 const { getUserByEmail } = require("../models/user.model.js")
 const { getAccountByUserID } = require("../models/account.model.js")
-const { createSession, getSessionByUserID, deleteSession, generateSessionID } = require("../lib/sessionStore.js");
+const { createSession, getSessionByID, getSessionByUserID, deleteSession, generateSessionID } = require("../lib/sessionStore.js");
 
 function authLoginController(req, res){
 
@@ -63,6 +63,19 @@ function authLoginController(req, res){
   // create new session
 }
 
+function authLogoutController(req, res){
+  const sessionID = req.get('X-Session-ID');
+
+  if(deleteSession(sessionID)){
+    console.log("if")
+    return res.status(200).json({ message: "User Logout Successful" });
+  } else {
+    console.log("else")
+    return res.status(404).json({ message: "Session Doesn't Exist" });
+  }
+}
+
 module.exports = {
-  authLoginController
+  authLoginController,
+  authLogoutController
 }
