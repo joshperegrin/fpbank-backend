@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer")
 const path = require("path")
-const { openAccountController } = require("../controllers/account.controller.js");
+const { openAccountController, getBalanceController } = require("../controllers/account.controller.js");
 const openAccountMiddleware = require("../middleware/openaccount.middleware.js");
 const authMiddleware = require("../middleware/auth.middleware.js")
 
@@ -17,9 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 
 router.post("/", upload.single('validid'), openAccountMiddleware, openAccountController);
-router.get("/balance", authMiddleware, (req, res) => {
-  return res.status(200).json({ message: "Nice!" })
-})
+router.get("/balance", authMiddleware, getBalanceController)
 
 module.exports = router;
 

@@ -1,6 +1,6 @@
 const { parseISO, subYears, isAfter } = require("date-fns");
 const { getUserByEmail, createUser } = require("../models/user.model.js")
-const { createAccount } = require("../models/account.model.js")
+const { createAccount, getAccountByUserID } = require("../models/account.model.js")
 const { normalizeName } = require("../validator/name.validator.js");
 const { generateSessionID, createSession } = require("../lib/sessionStore.js");
 
@@ -95,6 +95,36 @@ function openAccountController(req, res){
   })
 }
 
+function getBalanceController(req, res){
+  const user_id = req.user_id
+  console.log("USER ID:", user_id)
+  let account;
+
+  try{
+    account = getAccountByUserID(user_id);
+  }catch(e){
+    return res.status(500).json({ e })
+    console.error(e)
+  }
+
+  if(typeof account.balance === 'undefined'){
+    return res.status(500).json({ message: 'Internal Server Error.' })
+  }
+  if(typeof account.funds_on_hold === 'undefined'){
+    return res.status(500).json({ message: 'Internal Server Error.' })
+  }
+  if(typeof account.currency === 'undefined'){
+    return res.status(500).json({ message: 'Internal Server Error.' })
+  }
+  
+  return res.status(200).json({
+    balance: account.balance,
+    currency: account.currency,
+    fundsonhold: account.funds_on_hold
+  })
+}
+
 module.exports = {
-  openAccountController
+  openAccountController,
+  getBalanceController
 }
