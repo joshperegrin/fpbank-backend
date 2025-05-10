@@ -2,7 +2,7 @@ const { randomUUID } = require('crypto');
 
 const sessionStore = new Map();
 
-const sessionDuration = parseInt(process.env.SESSION_DURATION) || 3600000;
+const sessionDuration = parseInt(process.env.SESSION_DURATION) || (5 * 60 * 1000);
 
 function createSession(sessionID, user_id){
   const createdAt = Date.now();
@@ -73,7 +73,7 @@ function cleanupExpiredSessions() {
   }
 }
 
-setInterval(cleanupExpiredSessions, 300000);
+setInterval(cleanupExpiredSessions, (60 * 1000));
 
 module.exports = {
   createSession,
