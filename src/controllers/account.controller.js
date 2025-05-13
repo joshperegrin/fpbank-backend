@@ -3,6 +3,7 @@ const { getUserByEmail, createUser } = require("../models/user.model.js")
 const { createAccount, getAccountByUserID } = require("../models/account.model.js")
 const { normalizeName } = require("../validator/name.validator.js");
 const { generateSessionID, createSession } = require("../lib/sessionStore.js");
+const { getTransactionsByUserID } = require("../models/transaction.model.js")
 
 function openAccountController(req, res){
 
@@ -124,7 +125,43 @@ function getBalanceController(req, res){
   })
 }
 
+function getTransactionsController(req, res){
+  const user_id = req.user_id;
+  const limit = req.query.limit;
+  const offset = (req.query.page - 1) * limit;
+  let transaction_list;
+  try{
+    transaction_list = getTransactionsByUserID(user_id, limit, offset)
+    console.log(transaction_list)
+  }catch (e){
+    return res.status(500).json({ e })
+  }
+
+  if (transaction_list.length === 0){
+    return res.status(404).json({ message: "Transactions not Found" })
+  }
+
+  let parse_transaction_list = [];
+  
+  for(const _transaction of transaction_list){
+    console.log(_transaction)
+    const transaction = {
+      transactionReferenceNumber: _transaction.transaction_reference_number,
+      transactionName: _transaction.transaction_name,
+      transactionDate: _transaction.transaction_date,
+      transactionStatus: _transaction.transaction_status,
+      transactionType: _transaction.transaction_type,
+      transferAmount: _transaction.amount,
+      transactionDetails: JSON.parse(_transaction.transaction_details),
+    }
+    parse_transaction_list.push(transaction)
+  }
+    
+  return res.status(200).json({ transactions: parse_transaction_list })
+}
+
 module.exports = {
   openAccountController,
-  getBalanceController
+  getBalanceController,
+  getTransactionsController
 }
