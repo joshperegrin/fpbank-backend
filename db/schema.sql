@@ -67,51 +67,33 @@ CREATE TABLE Banks (
 -- Index for name lookup
 CREATE INDEX idx_banks_name ON Banks(name);
 
-
 CREATE TABLE Transactions (
     transaction_id INTEGER PRIMARY KEY,
-    transaction_reference_number VARCHAR(100) UNIQUE NOT NULL, -- System generated unique ID
-    transaction_name VARCHAR(255), -- e.g., "Transfer to John Doe", "Meralco Bill Payment"
+    transaction_reference_number VARCHAR(100) UNIQUE NOT NULL, 
+    transaction_name VARCHAR(255), 
     transaction_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    status TEXT CHECK( status IN ('PENDING', 'COMPLETED', 'FAILED', 'CANCELLED') ) NOT NULL DEFAULT 'PENDING',
-    type TEXT CHECK( type IN ('INTERNAL_TRANSFER', 'EXTERNAL_TRANSFER', 'BILL_PAYMENT', 'EWALLET_LOAD', 'CRYPTO_CONVERSION', 'CARDLESS_WITHDRAWAL', 'DEPOSIT') ) NOT NULL,
-
-    -- Core transaction details
-    account_id INT NOT NULL REFERENCES Accounts(account_id), -- The source account initiating the transaction
+    transaction_status TEXT CHECK( transaction_status IN ('PENDING', 'COMPLETED', 'FAILED', 'CANCELLED') ) NOT NULL DEFAULT 'PENDING',
+    transaction_type TEXT CHECK( transaction_type IN ('INTERNAL_TRANSFER', 'EXTERNAL_TRANSFER', 'BILL_PAYMENT', 'EWALLET_LOAD', 'CRYPTO_CONVERSION', 'CARDLESS_WITHDRAWAL', 'DEPOSIT') ) NOT NULL,
     amount DECIMAL(18, 4) NOT NULL,
-    notes TEXT,
-    service_charge DECIMAL(18, 4) DEFAULT 0.00, -- Applicable for external transfers
-
-    -- Recipient details (nullable based on type)
-    recipient_account_id INT REFERENCES Accounts(account_id), -- FK to Accounts (for internal transfers)
-    recipient_bank_name VARCHAR(255),     -- For external transfers
-    recipient_account_number VARCHAR(50), -- For external transfers
-    recipient_account_name VARCHAR(255),  -- For external transfers
-    transfer_channel VARCHAR(100),        -- For external transfers
-
-    -- Biller details (nullable based on type)
-    biller_id INT REFERENCES Billers(biller_id),
-    biller_reference_number VARCHAR(100), -- e.g., Utility account number provided by user
-
-    -- E-wallet details (nullable based on type)
-    ewallet_id INT REFERENCES Ewallets(ewallet_id),
-    ewallet_reference_number VARCHAR(100), -- e.g., Phone number or account ID provided by user
-
-    -- Withdrawal details (nullable based on type)
-    withdrawal_location VARCHAR(255),      -- Location where cardless withdrawal was completed
-    cardless_initiation_ref VARCHAR(100), -- Optional: If user provides a ref during initiation POST /api/withdraw/cardless
-
+    note VARCHAR(255),
+    transaction_details TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP -- To track status changes
 );
 
+CREATE TABLE TransactionEntries (
+    entry_id INTEGER PRIMARY KEY,
+    transaction_id INTEGER REFERENCES Transactions(transaction_id),
+    account_id INTEGER REFERENCES Accounts(account_id),
+    entry_type TYPE CHECK (entry_type IN ('DEBIT', 'CREDIT')) NOT NULL
+);
+
 -- Indexes for common lookups
-CREATE INDEX idx_transactions_account_id ON Transactions(account_id);
-CREATE INDEX idx_transactions_type ON Transactions(type);
-CREATE INDEX idx_transactions_status ON Transactions(status);
+CREATE INDEX idx_transactions_account_id ON TransactionEntries(account_id);
+CREATE INDEX idx_transactions_type ON Transactions(transaction_type);
+CREATE INDEX idx_transactions_status ON Transactions(transaction_status);
 CREATE INDEX idx_transactions_date ON Transactions(transaction_date);
 CREATE INDEX idx_transactions_ref_num ON Transactions(transaction_reference_number);
-CREATE INDEX idx_transactions_recipient_account_id ON Transactions(recipient_account_id); -- For finding incoming internal transfers
 
 CREATE TABLE Cryptocurrencies (
     crypto_id INTEGER PRIMARY KEY,
