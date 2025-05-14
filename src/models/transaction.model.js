@@ -16,7 +16,14 @@ function getListOfBillers(){
   return billers;
 }
 
+function getListOfEWallets(){
+  const stmt = db.prepare("SELECT name FROM EWallets;")
+  const ewallets = stmt.all()
+  return ewallets;
+}
+
 module.exports = {
   getTransactionsByUserID,
-  getListOfBillers
+  getListOfBillers,
+  getListOfEWallets
 }
