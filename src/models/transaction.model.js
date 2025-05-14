@@ -10,6 +10,13 @@ function getTransactionsByUserID(user_id, limit, offset){
   return transactions;
 }
 
+function getListOfBillers(){
+  const stmt = db.prepare("SELECT name FROM Billers;")
+  const billers = stmt.all()
+  return billers;
+}
+
 module.exports = {
-  getTransactionsByUserID
+  getTransactionsByUserID,
+  getListOfBillers
 }
