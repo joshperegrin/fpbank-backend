@@ -22,8 +22,15 @@ function getListOfEWallets(){
   return ewallets;
 }
 
+function getListOfBanks(){
+  const stmt = db.prepare("SELECT name FROM Banks;")
+  const banks = stmt.all()
+  return banks;
+}
+
 module.exports = {
   getTransactionsByUserID,
   getListOfBillers,
-  getListOfEWallets
+  getListOfEWallets,
+  getListOfBanks
 }
