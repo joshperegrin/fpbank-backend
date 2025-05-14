@@ -152,6 +152,8 @@ function getTransactionsController(req, res){
       transactionStatus: _transaction.transaction_status,
       transactionType: _transaction.transaction_type,
       transferAmount: _transaction.amount,
+      entryType: _transaction.entry_type,
+      note: _transaction.note,
       transactionDetails: JSON.parse(_transaction.transaction_details),
     }
     parse_transaction_list.push(transaction)
