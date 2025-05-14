@@ -45,9 +45,13 @@ function getListOfBanksController(req, res){
   return res.status(200).json({ banks: banks.map((value) => value.name ) })
 }
 
+function internalTransferController(req, res){
+  
+}
 
 module.exports = {
   getListOfBillersController,
   getListOfEWalletsController,
-  getListOfBanksController
+  getListOfBanksController,
+  internalTransferController
 }
