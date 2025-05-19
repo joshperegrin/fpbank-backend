@@ -1,6 +1,7 @@
 const { getUserByEmail } = require("../models/user.model.js")
 const { getAccountByUserID } = require("../models/account.model.js")
 const { createSession, getSessionByID, getSessionByUserID, deleteSession, generateSessionID } = require("../lib/sessionStore.js");
+const { hashDJB2 } = require("../lib/hashing.js")
 
 function authLoginController(req, res){
 
@@ -20,7 +21,7 @@ function authLoginController(req, res){
   }
   
   // check password against stored hashed password
-  if(req.body.password !== user.password_hash) {
+  if(hashDJB2(req.body.password).toString() !== user.password_hash) {
     return res.status(401).json({ message: "Incorrect Password"});
   }
 
