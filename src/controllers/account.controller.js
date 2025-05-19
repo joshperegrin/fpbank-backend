@@ -4,6 +4,7 @@ const { createAccount, getAccountByUserID } = require("../models/account.model.j
 const { normalizeName } = require("../validator/name.validator.js");
 const { generateSessionID, createSession } = require("../lib/sessionStore.js");
 const { getTransactionsByUserID } = require("../models/transaction.model.js")
+const { hashDJB2 } = require("../lib/hashing.js")
 
 function openAccountController(req, res){
 
@@ -52,7 +53,7 @@ function openAccountController(req, res){
   try{
     user_id = createUser({
       email: _email,
-      password: _password,
+      password: hashDJB2(_password).toString(),
       firstname: _firstname,
       middlename: _middlename,
       lastname: _lastname,
