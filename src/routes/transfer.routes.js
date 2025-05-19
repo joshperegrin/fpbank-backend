@@ -3,10 +3,48 @@ const authMiddleware = require("../middleware/auth.middleware.js");
 const { getListOfBillersController, getListOfEWalletsController, getListOfBanksController, internalTransferController } = require("../controllers/transfer.controller.js");
 const router = express.Router();
 
+const { body, validationResult } = require('express-validator');
+
+const transferValidationRules = [
+  // Validate amount
+  body('amount')
+    .exists().withMessage('Amount is required.')
+    .isFloat({ gt: 0 }).withMessage('Amount must be greater than 0.')
+    .custom((value) => {
+      if (value > 100000) {
+        throw new Error('Amount exceeds transaction limit.');
+      }
+      return true;
+    }),
+
+  // Validate notes (optional, but if present must meet constraints)
+  body('notes')
+    .optional()
+    .isString().withMessage('Notes must be a string.')
+    .isLength({ max: 250 }).withMessage('Notes must not exceed 250 characters.'),
+
+  // Validate destination account number
+  body('destination_AccountNumber')
+    .exists().withMessage('Destination account number is required.')
+    .isString().withMessage('Account number must be a string.')
+    .matches(/^\d{10}$/).withMessage('Account number must be exactly 10 digits.'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        errors: errors.array() 
+      });
+    }
+    next()
+  }
+
+];
+
+
 router.get("/billers", authMiddleware, getListOfBillersController)
 router.get("/ewallets", authMiddleware, getListOfEWalletsController)
 router.get("/externals", authMiddleware, getListOfBanksController)
 
-router.post("/internal", authMiddleware, internalTransferController)
+router.post("/internal", express.json(), authMiddleware, transferValidationRules, internalTransferController)
 
 module.exports = router;
