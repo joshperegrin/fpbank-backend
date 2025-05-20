@@ -113,9 +113,81 @@ function internalTransferController(req, res){
   })
 }
 
+function externalTransferController(req, res){
+
+  const srcAcc = getAccountByUserID(req.user_id)
+  let serviceCharge;
+  if(req.body.transferChannel === 'INSTAPAY'){
+    serviceCharge = 15;
+  } else {
+    serviceCharge = 0;
+  }
+
+  // sender account exist and is valid
+  if(typeof srcAcc === "undefined"){
+    return res.status(500).json({ message: "Can't find Source Account" })
+  }
+
+  const srcName = getName(srcAcc.user_id)
+  const destName = req.body.recipient_AccountName
+
+  // check if bank exist
+
+  if(!getListOfBanks().map((value) => value.name ).includes(req.body.recipient_Bank)){
+    return res.status(500).json({ message: "Transfer to " + req.body.recipient_Bank + " is not supported." })
+  }
+
+  
+  // sender has sufficient funds
+  if(srcAcc.balance < parseFloat(req.body.amount) + serviceCharge){
+    return res.status(400).json({ message: "Insufficient balance."})
+  }
+
+  const currentDate = new Date()
+  const transactionName = "Fund Transfer to " + destName
+  const transactionReferenceNumber = "EXT" + currentDate.toISOString().slice(0, 10).replace(/-/g, '') + generateRandomReferenceNumber();
+  // enforce transfer limits
+  const transaction = {
+    transaction_reference_number: transactionReferenceNumber,
+    transaction_name: transactionName,
+    transaction_status: "COMPLETED",
+    transaction_type: "EXTERNAL_TRANSFER",
+    amount: req.body.amount,
+    note: req.body.note,
+    transaction_details: JSON.stringify({
+      source_Name: srcName,
+      source_AccountNumber: srcAcc.account_number,
+      destination_Bank: req.body.recipient_Bank,
+      destination_Name: req.body.recipient_AccountName,
+      destination_AccountNumber: req.body.recipient_AccountNumber,
+      transferChannel: req.body.transferChannel,
+      serviceCharge
+    }),
+  }
+  
+  // insert new transaction
+  const transaction_id = createTransaction(transaction)
+
+  // insert transactionentries
+  createTransactionEntry(srcAcc.account_id, transaction_id, "DEBIT")
+
+  // adjust balance for the bank account
+  debitAccount(parseFloat(req.body.amount) + serviceCharge, srcAcc.account_id)
+
+  return res.status(201).json({
+    transactionDate: currentDate.toISOString(),
+    transactionName,
+    transactionReferenceNumber,
+    transactionStatus: "COMPLETED",
+    serviceCharge,
+  })
+  
+}
+
 module.exports = {
   getListOfBillersController,
   getListOfEWalletsController,
   getListOfBanksController,
-  internalTransferController
+  internalTransferController,
+  externalTransferController
 }
