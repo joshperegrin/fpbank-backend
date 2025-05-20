@@ -28,9 +28,28 @@ function getListOfBanks(){
   return banks;
 }
 
+function createTransaction(transaction){
+  const stmt = db.prepare("INSERT INTO Transactions(transaction_reference_number, transaction_name, transaction_status, transaction_type, amount, note, transaction_details) VALUES(@_transaction_reference_number,@_transaction_name,@_transaction_status,@_transaction_type,@_amount,@_note,@_transaction_details)")
+  const info = stmt.run({
+    _transaction_reference_number: transaction.transaction_reference_number,
+    _transaction_name: transaction.transaction_name,
+    _transaction_status: transaction.transaction_status,
+    _transaction_type: transaction.transaction_type,
+    _amount: transaction.amount,
+    _note: transaction.note,
+    _transaction_details: transaction.transaction_details
+  })
+  if(info.changes === 0){
+    throw Error("Account Creation Failed, no changes were made to the database.")
+  } else {
+    return info.lastInsertRowid
+  }
+}
+
 module.exports = {
   getTransactionsByUserID,
   getListOfBillers,
   getListOfEWallets,
-  getListOfBanks
+  getListOfBanks,
+  createTransaction
 }
