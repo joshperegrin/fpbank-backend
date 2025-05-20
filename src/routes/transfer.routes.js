@@ -18,7 +18,7 @@ const transferValidationRules = [
     }),
 
   // Validate notes (optional, but if present must meet constraints)
-  body('notes')
+  body('note')
     .optional()
     .isString().withMessage('Notes must be a string.')
     .isLength({ max: 250 }).withMessage('Notes must not exceed 250 characters.'),
