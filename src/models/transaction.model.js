@@ -46,10 +46,25 @@ function createTransaction(transaction){
   }
 }
 
+function createTransactionEntry(account_id, transaction_id, entry_type){
+  const stmt = db.prepare("INSERT INTO TransactionEntries(transaction_id, account_id, entry_type) VALUES(@_transaction_id, @_account_id, @_entry_type)")
+  const info = stmt.run({
+    _transaction_id: transaction_id, 
+    _account_id: account_id, 
+    _entry_type: entry_type, 
+  })
+  if(info.changes === 0){
+    throw Error("TransactionEntry Creation Failed.")
+  } else {
+    return info.lastInsertRowid
+  }
+}
+
 module.exports = {
   getTransactionsByUserID,
   getListOfBillers,
   getListOfEWallets,
   getListOfBanks,
-  createTransaction
+  createTransaction,
+  createTransactionEntry
 }
