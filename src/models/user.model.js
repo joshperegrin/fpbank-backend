@@ -41,7 +41,16 @@ function createUser(userDetails){
   }
 }
 
+function getName(user_id){
+  const stmt = db.prepare(`SELECT firstname, middlename, lastname FROM USERS WHERE user_id=@_user_id;`)
+  const name = stmt.get({
+    _user_id: user_id,
+  })
+  return name;
+}
+
 module.exports = {
   getUserByEmail,
-  createUser
+  createUser,
+  getName
 }
