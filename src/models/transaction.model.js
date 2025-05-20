@@ -60,6 +60,30 @@ function createTransactionEntry(account_id, transaction_id, entry_type){
   }
 }
 
+function creditAccount(amount, account_id){
+  const stmt = db.prepare("UPDATE Accounts SET balance=balance+@_amount WHERE account_id=@_account_id;")
+  const info = stmt.run({
+    _amount: amount,
+    _account_id: account_id
+  })
+  if(info.changes === 0){
+    throw Error("Account crediting failed")
+  }
+  return;
+}
+
+function debitAccount(amount, account_id){
+  const stmt = db.prepare("UPDATE Accounts SET balance=balance-@_amount WHERE account_id=@_account_id;")
+  const info = stmt.run({
+    _amount: amount,
+    _account_id: account_id
+  })
+  if(info.changes === 0){
+    throw Error("Account debitting failed")
+  }
+  return;
+}
+
 module.exports = {
   getTransactionsByUserID,
   getListOfBillers,
