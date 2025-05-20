@@ -90,5 +90,7 @@ module.exports = {
   getListOfEWallets,
   getListOfBanks,
   createTransaction,
-  createTransactionEntry
+  createTransactionEntry,
+  debitAccount,
+  creditAccount
 }

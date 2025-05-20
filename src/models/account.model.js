@@ -22,6 +22,12 @@ function getAccountByUserID(user_id){
   return account;
 }
 
+function getAccountByAccountNumber(account_number){
+  const stmt = db.prepare('SELECT * FROM ACCOUNTS WHERE account_number=@_account_number');
+  const account = stmt.get({_account_number: account_number});
+  return account;
+}
+
 function createAccount(user_id){
   const generated_Account_Number = generateDebitCardNumber()
   const currentDate = new Date()
@@ -68,5 +74,6 @@ function createAccount(user_id){
 
 module.exports = {
   getAccountByUserID,
-  createAccount
+  createAccount,
+  getAccountByAccountNumber
 }
