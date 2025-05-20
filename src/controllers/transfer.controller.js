@@ -184,10 +184,66 @@ function externalTransferController(req, res){
   
 }
 
+function billerTransferController(req, res){
+  const srcAcc = getAccountByUserID(req.user_id)
+  
+  // sender account exist and is valid
+  if(typeof srcAcc === "undefined"){
+    return res.status(400).json({ message: "Can't find Source Account" })
+  }
+
+  const srcName = getName(srcAcc.user_id)
+
+  if(!getListOfBillers().map((value) => value.name ).includes(req.body.billerName)){
+    return res.status(400).json({ message: "Payment to " + req.body.billerName + " is not supported." })
+  }
+
+  // sender has sufficient funds
+  if(srcAcc.balance < parseFloat(req.body.amount)){
+    return res.status(400).json({ message: "Insufficient balance."})
+  }
+
+  const currentDate = new Date()
+  const transactionName = req.body.billerName + " Bills Payment"
+  const transactionReferenceNumber = "BLS" + currentDate.toISOString().slice(0, 10).replace(/-/g, '') + generateRandomReferenceNumber();
+  // enforce transfer limits
+  const transaction = {
+    transaction_reference_number: transactionReferenceNumber,
+    transaction_name: transactionName,
+    transaction_status: "COMPLETED",
+    transaction_type: "BILL_PAYMENT",
+    amount: req.body.amount,
+    note: req.body.note,
+    transaction_details: JSON.stringify({
+      source_Name: srcName,
+      source_AccountNumber: srcAcc.account_number,
+      biller_Name: req.body.billerName,
+      biller_referenceNumber: req.body.referenceNumber,
+    }),
+  }
+  
+  // insert new transaction
+  const transaction_id = createTransaction(transaction)
+
+  // insert two transactionentries (debit, credit)
+  createTransactionEntry(srcAcc.account_id, transaction_id, "DEBIT")
+
+  // adjust balance for the two bank accounts
+  debitAccount(parseFloat(req.body.amount), srcAcc.account_id)
+
+  return res.status(201).json({
+    transactionDate: currentDate.toISOString(),
+    transactionName,
+    transactionReferenceNumber,
+    transactionStatus: "COMPLETED",
+  })
+}
+
 module.exports = {
   getListOfBillersController,
   getListOfEWalletsController,
   getListOfBanksController,
   internalTransferController,
-  externalTransferController
+  externalTransferController,
+  billerTransferController
 }

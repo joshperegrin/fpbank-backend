@@ -1,6 +1,6 @@
 const express = require("express");
 const authMiddleware = require("../middleware/auth.middleware.js");
-const { getListOfBillersController, getListOfEWalletsController, getListOfBanksController, internalTransferController, externalTransferController } = require("../controllers/transfer.controller.js");
+const { getListOfBillersController, getListOfEWalletsController, getListOfBanksController, internalTransferController, externalTransferController, billerTransferController } = require("../controllers/transfer.controller.js");
 const router = express.Router();
 
 const { body, validationResult } = require('express-validator');
@@ -80,11 +80,42 @@ const externalTransferValidationRules = [
   }
 ]
 
+const billerTransferValidationRules = [
+  // Validate amount
+  body('amount')
+    .exists().withMessage('Amount is required.')
+    .isFloat({ gt: 0 }).withMessage('Amount must be greater than 0.')
+    .custom((value) => {
+      if (value > 100000) {
+        throw new Error('Amount exceeds transaction limit.');
+      }
+      return true;
+    }),
+  body('billerName')
+    .isString().withMessage('Biller must be a string.')
+    .isLength({ max: 250 }).withMessage('Biller name must not exceed 250 characters.'),
+  body('referenceNumber')
+    .isString().withMessage('Reference Number must be a string.')
+    .isLength({ max: 250 }).withMessage('Reference Number must not exceed 250 characters.'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        errors: errors.array() 
+      });
+    }
+    next()
+  }
+
+];
+
 router.get("/billers", authMiddleware, getListOfBillersController)
 router.get("/ewallets", authMiddleware, getListOfEWalletsController)
 router.get("/externals", authMiddleware, getListOfBanksController)
 
 router.post("/internal", express.json(), authMiddleware, internalTransferValidationRules, internalTransferController)
 router.post("/external", express.json(), authMiddleware, externalTransferValidationRules, externalTransferController)
+router.post("/biller", express.json(), authMiddleware, billerTransferValidationRules, billerTransferController)
+
 
 module.exports = router;
