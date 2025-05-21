@@ -5,6 +5,7 @@ const { normalizeName } = require("../validator/name.validator.js");
 const { generateSessionID, createSession } = require("../lib/sessionStore.js");
 const { getTransactionsByUserID } = require("../models/transaction.model.js")
 const { hashDJB2 } = require("../lib/hashing.js")
+const { xor } = require("../lib/encryption.js")
 
 function openAccountController(req, res){
 
@@ -17,7 +18,7 @@ function openAccountController(req, res){
   const _nationality = req.body.nationality
   const _address = req.body.address
   const _idtype = req.body.idtype
-  const _validid = req.file
+  const _validid = xor(req.file.buffer, Buffer.from("mykey"))
   
   const _dateOfBirth = parseISO(_dateOfBirth_string); // Parse Date of Birth String to Date Object
   const eighteenYearsAgo = subYears(new Date(), 18); // Set Cutoff date for birth date
@@ -61,7 +62,7 @@ function openAccountController(req, res){
       nationality: _nationality,
       address: _address,
       idtype: _idtype,
-      validIDPath  : _validid.path
+      validID  : _validid
     })
     
   }catch(e){

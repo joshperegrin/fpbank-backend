@@ -17,9 +17,9 @@ function createUser(userDetails){
   const user_nationality = userDetails.nationality
   const user_address = userDetails.address
   const user_id_type = userDetails.idtype
-  const user_valid_id_path = userDetails.validIDPath
+  const user_valid_id = userDetails.validID
 
-  const stmt = db.prepare(`INSERT INTO USERS(email, password_hash, firstname, middlename, lastname, date_of_birth, nationality, address, id_type, valid_id_path) VALUES(@_email, @_password_hash, @_firstname, @_middlename, @_lastname, @_date_of_birth, @_nationality, @_address, @_id_type, @_valid_id_path) `)
+  const stmt = db.prepare(`INSERT INTO USERS(email, password_hash, firstname, middlename, lastname, date_of_birth, nationality, address, id_type, valid_id) VALUES(@_email, @_password_hash, @_firstname, @_middlename, @_lastname, @_date_of_birth, @_nationality, @_address, @_id_type, @_valid_id) `)
     
   const info = stmt.run({
     _email: user_email,
@@ -31,7 +31,7 @@ function createUser(userDetails){
     _nationality: user_nationality,
     _address: user_address,
     _id_type: user_id_type,
-    _valid_id_path: user_valid_id_path,
+    _valid_id: user_valid_id,
   })
   
   if (info.changes === 0){

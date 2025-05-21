@@ -10,7 +10,7 @@ CREATE TABLE Users (
     nationality VARCHAR(100) NOT NULL,
     address TEXT NOT NULL,
     id_type VARCHAR(50) NOT NULL,
-    valid_id_path VARCHAR(512) NOT NULL, -- Path/URL to the stored ID file
+    valid_id BLOB NOT NULL, -- Path/URL to the stored ID file
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
