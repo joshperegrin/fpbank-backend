@@ -4,10 +4,10 @@
 -- Users
 -- ###################################################################################
 INSERT INTO Users (user_id, email, password_hash, firstname, middlename, lastname, date_of_birth, nationality, address, id_type, valid_id) VALUES
-(1, 'juan.delacruz@example.com', 'hashed_password_jdc', 'Juan', 'Santos', 'Dela Cruz', '1990-05-15', 'Filipino', '123 Rizal St, Manila, Philippines', 'Passport', X'48656C6C6F2053514C69746521'),
-(2, 'maria.clara@example.com', 'hashed_password_mc', 'Maria', 'Isabella', 'Clara', '1992-08-22', 'Filipino', '456 Bonifacio Ave, Quezon City, Philippines', 'DriversLicense', X'48656C6C6F2053514C69746521'),
-(3, 'pedro.penduko@example.com', 'hashed_password_pp', 'Pedro', NULL, 'Penduko', '1985-11-01', 'Filipino', '789 Aguinaldo Hi-way, Cavite, Philippines', 'UMID', X'48656C6C6F2053514C69746521'),
-(4, 'anna.luna@example.com', 'hashed_password_al', 'Anna', 'Marie', 'Luna', '2000-01-30', 'Filipino', '101 Ayala Ave, Makati, Philippines', 'NationalID', X'48656C6C6F2053514C69746521');
+(1, 'juan.delacruz@example.com', 402054200, 'Juan', 'Santos', 'Dela Cruz', '1990-05-15', 'Filipino', '123 Rizal St, Manila, Philippines', 'Passport', X'48656C6C6F2053514C69746521'),
+(2, 'maria.clara@example.com', 402054200, 'Maria', 'Isabella', 'Clara', '1992-08-22', 'Filipino', '456 Bonifacio Ave, Quezon City, Philippines', 'DriversLicense', X'48656C6C6F2053514C69746521'),
+(3, 'pedro.penduko@example.com', 402054200, 'Pedro', NULL, 'Penduko', '1985-11-01', 'Filipino', '789 Aguinaldo Hi-way, Cavite, Philippines', 'UMID', X'48656C6C6F2053514C69746521'),
+(4, 'anna.luna@example.com', 402054200, 'Anna', 'Marie', 'Luna', '2000-01-30', 'Filipino', '101 Ayala Ave, Makati, Philippines', 'NationalID', X'48656C6C6F2053514C69746521');
 
 -- ###################################################################################
 -- Accounts

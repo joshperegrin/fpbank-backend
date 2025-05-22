@@ -10,6 +10,6 @@ app.use('/auth', authRoutes)
 app.use('/account', accountRoutes)
 app.use('/transfer', transferRoutes)
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://localhost:${PORT}`)
 })
