@@ -58,6 +58,10 @@ function authLoginController(req, res){
       firstname: user.firstname,
       middlename: user.middlename,
       lastname: user.lastname,
+      birthdate: user.date_of_birth,
+      nationality: user.nationality,
+      address: user.address,
+      email: user.email
     }
   });
   // check if user has existing session
