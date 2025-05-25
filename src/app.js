@@ -5,6 +5,7 @@ const authRoutes = require("./routes/auth.routes.js")
 const accountRoutes = require("./routes/account.routes.js")
 const transferRoutes = require("./routes/transfer.routes.js")
 const cryptoRoutes = require("./routes/crypto.routes.js")
+const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.use(cors({
 // Add middleware to parse JSON request bodies
 app.use(express.json());
 
+app.use(cors())
 app.use('/auth', authRoutes)
 app.use('/account', accountRoutes)
 app.use('/transfer', transferRoutes)

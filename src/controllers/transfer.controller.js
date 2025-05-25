@@ -2,6 +2,8 @@ const { getListOfBillers, getListOfEWallets, getListOfBanks, createTransaction, 
 const { getAccountByUserID, getAccountByAccountNumber } = require("../models/account.model.js")
 const { generateRandomReferenceNumber } = require("../lib/randomGenerator.js")
 const { getName } = require("../models/user.model.js")
+const { registerTransaction } = require("../lib/transactionLimit.js")
+const { logMessage } = require("../lib/logging.js")
 
 function getListOfBillersController(req, res){
   let billers;
@@ -104,7 +106,7 @@ function internalTransferController(req, res){
   // adjust balance for the two bank accounts
   debitAccount(req.body.amount, srcAcc.account_id)
   creditAccount(req.body.amount, destAcc.account_id)
-
+  logMessage(" User(" + req.user_id + ") made an internal fund transfer.")
   return res.status(201).json({
     transactionDate: currentDate.toISOString(),
     transactionName,
@@ -173,7 +175,8 @@ function externalTransferController(req, res){
 
   // adjust balance for the bank account
   debitAccount(parseFloat(req.body.amount) + serviceCharge, srcAcc.account_id)
-
+  registerTransaction(req.user_id)
+  logMessage(" User(" + req.user_id + ") made an external fund transfer.")
   return res.status(201).json({
     transactionDate: currentDate.toISOString(),
     transactionName,
@@ -231,6 +234,8 @@ function billerTransferController(req, res){
   // adjust balance for the two bank accounts
   debitAccount(parseFloat(req.body.amount), srcAcc.account_id)
 
+  logMessage(" User(" + req.user_id + ") made a bills payment .")
+
   return res.status(201).json({
     transactionDate: currentDate.toISOString(),
     transactionName,
@@ -285,6 +290,8 @@ function ewalletTransferController(req, res){
 
   // adjust balance for the two bank accounts
   debitAccount(parseFloat(req.body.amount), srcAcc.account_id)
+
+  logMessage(" User(" + req.user_id + ") made an ewallet load .")
 
   return res.status(201).json({
     transactionDate: currentDate.toISOString(),

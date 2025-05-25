@@ -2,6 +2,7 @@ const { getUserByEmail } = require("../models/user.model.js")
 const { getAccountByUserID } = require("../models/account.model.js")
 const { createSession, getSessionByID, getSessionByUserID, deleteSession, generateSessionID } = require("../lib/sessionStore.js");
 const { hashDJB2 } = require("../lib/hashing.js")
+const { logMessage } = require("../lib/logging.js")
 
 function authLoginController(req, res){
 
@@ -46,6 +47,8 @@ function authLoginController(req, res){
   sessionID = generateSessionID();
   session = createSession(sessionID, user.user_id)
 
+  logMessage(" User(" + user.user_id + ") logged in.")
+
   return res.status(201).json({
     sessionID,
     accountInfo: {
@@ -73,6 +76,7 @@ function authLogoutController(req, res){
 
   if(deleteSession(sessionID)){
     console.log("if")
+    logMessage(" User(" + req.user_id + ") logged out.")
     return res.status(200).json({ message: "User Logout Successful" });
   } else {
     console.log("else")
