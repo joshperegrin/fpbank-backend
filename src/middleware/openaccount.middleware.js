@@ -32,12 +32,6 @@ function openAccountMiddleware(req, res, next) {
     validationResult = validateNationality(req.body.nationality);
     if (validationResult !== null) errors.nationality = validationResult;
 
-    validationResult = validateAddress(req.body.address);
-    if (validationResult !== null) errors.address = validationResult;
-
-    validationResult = validateValidIDType(req.body.idtype);
-    if (validationResult !== null) errors.idtype = validationResult;
-
     validationResult = validateValidIDFile(req.file);
     if (validationResult !== null) errors.validid = validationResult;
 

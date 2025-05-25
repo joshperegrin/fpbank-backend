@@ -10,11 +10,6 @@ function validateName(name){
   }
 
   // - must contain only letters, hyphens, apostrophes
-  const name_regex = /^[A-Za-z'-]+$/;
-  if(!name_regex.test(name)){
-    return "Invalid name format"
-  }
-
   // - max 100 characters
   if(name.length > 100){
     return "Name must be less than 100 characters"
