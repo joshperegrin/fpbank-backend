@@ -1,6 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../middleware/auth.middleware.js");
 const { getListOfBillersController, getListOfEWalletsController, getListOfBanksController, internalTransferController, externalTransferController, billerTransferController, ewalletTransferController } = require("../controllers/transfer.controller.js");
+const { ruleBasedAccessControlMiddleware } = require("../middleware/access_control.middleware.js")
 const router = express.Router();
 
 const { body, validationResult } = require('express-validator');
@@ -143,7 +144,7 @@ router.get("/ewallets", authMiddleware, getListOfEWalletsController)
 router.get("/externals", authMiddleware, getListOfBanksController)
 
 router.post("/internal", express.json(), authMiddleware, internalTransferValidationRules, internalTransferController)
-router.post("/external", express.json(), authMiddleware, externalTransferValidationRules, externalTransferController)
+router.post("/external", express.json(), authMiddleware, ruleBasedAccessControlMiddleware, externalTransferValidationRules, externalTransferController)
 router.post("/biller", express.json(), authMiddleware, billerTransferValidationRules, billerTransferController)
 router.post("/ewallet", express.json(), authMiddleware, ewalletTransferValidationRules, ewalletTransferController)
 

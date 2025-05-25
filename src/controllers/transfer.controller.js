@@ -2,6 +2,7 @@ const { getListOfBillers, getListOfEWallets, getListOfBanks, createTransaction, 
 const { getAccountByUserID, getAccountByAccountNumber } = require("../models/account.model.js")
 const { generateRandomReferenceNumber } = require("../lib/randomGenerator.js")
 const { getName } = require("../models/user.model.js")
+const { registerTransaction } = require("../lib/transactionLimit.js")
 
 function getListOfBillersController(req, res){
   let billers;
@@ -173,7 +174,7 @@ function externalTransferController(req, res){
 
   // adjust balance for the bank account
   debitAccount(parseFloat(req.body.amount) + serviceCharge, srcAcc.account_id)
-
+  registerTransaction(req.user_id)
   return res.status(201).json({
     transactionDate: currentDate.toISOString(),
     transactionName,
@@ -285,7 +286,6 @@ function ewalletTransferController(req, res){
 
   // adjust balance for the two bank accounts
   debitAccount(parseFloat(req.body.amount), srcAcc.account_id)
-
   return res.status(201).json({
     transactionDate: currentDate.toISOString(),
     transactionName,
