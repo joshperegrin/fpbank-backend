@@ -10,12 +10,6 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS middleware - place this BEFORE your routes!
-app.use(cors({
-  origin: 'http://localhost:5173', // <-- your frontend dev server
-  credentials: true
-}));
-
 // Add middleware to parse JSON request bodies
 app.use(express.json());
 
