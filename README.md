@@ -7,7 +7,7 @@
   <img alt="Helix" height="200" src="logo-white.png">
 </picture>
 
-**A robust and secure Node.js Express backend API for the FPBank application, enabling core banking functionalities like user authentication, account management, and secure transaction processing.**
+**A robust Node.js Express backend API for the Full Port Bank application, enabling and simulating core banking functionalities like user authentication, account management, and secure transaction processing.**
 
 </div>
 
